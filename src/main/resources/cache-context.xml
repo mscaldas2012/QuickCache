@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- Cleanup policies -->
+    <bean id="expiredCleanupPolicy" class="com.msc.cache.cleanup.ExpiredCleanupPolicy">
+        <property name="frequency" value="60"/>
+    </bean>
+    <bean id="idleTimeCleanupPolicy" class="com.msc.cache.cleanup.IdleTimeCleanupPolicy">
+        <property name="frequency" value="60"/>
+    </bean>
+    <bean id="lruCleanupPolicy" class="com.msc.cache.cleanup.LRUCleanupPolicy">
+        <property name="frequency" value="60"/>
+    </bean>
+    <bean id="timeToLiveCleanupPolicy" class="com.msc.cache.cleanup.TimeToLiveCleanupPolicy">
+        <property name="frequency" value="60"/>
+    </bean>
+
+    <!-- Initialization Policies -->
+    <bean id="fullInitializationPolicy" class="com.msc.cache.initializer.FullInitializationPolicy"/>
+
+
+    <!-- Notification Policies -->
+
+    <util:list id="cache-1-cleanupPolicies" list-class="java.util.ArrayList">
+        <ref bean="lruCleanupPolicy"/>
+    </util:list>
+
+    <!-- example of minimum cache manager configuration -->
+    <bean id="cm" class="com.msc.cache.CacheManager" init-method="init">
+        <!-- depending which Cleanup policy you want, set one of the following -->
+        <!-- setting both defaultIdleTime and DefaultTimeToLive, will automatically hook expriedCleanUpPolicy.  -->
+        <!-- setting defaultIdleTime, will automatically hook  idleTimeCleanupPolicy -->
+        <property name="defaultIdleTime" value=""/>
+        <!-- setting defaultTimeToLive, will automatically hook   timeToLiveCleanupPolicy -->
+        <property name="defaultTimeToLive" value=""/>
+        <property name="loaderPolicy" ref="bean implementing CacheLoaderPolicy"/>
+        <!-- IF all values should be loaded before hand, use the initialization policy below -->
+        <property name="initializerPolicy" ref="fullInitializationPolicy"/>
+    </bean>
+
+    <!-- Example of a Full Cache manager configuration-->
+    <bean id="cacheManager" class="com.msc.cache.CacheManager" init-method="init">
+        <property name="description" value=""/>
+        <property name="name" value=""/>
+        <property name="defaultIdleTime"/>
+        <property name="defaultTimeToLive"/>
+        <property name="grouped" value="true|false"/>
+        <property name="atomicGroup" value="true|false"/>
+        <property name="distributable"/>
+        <property name="synchronizeCluster"/>
+        <property name="highWaterMark"/>
+        <property name="lowWaterMark"/>
+        <property name="treshHold"/>
+        <property name="loaderPolicy" ref="name-Loader"/>
+        <property name="initializerPolicy" ref="fullInitializationPolicy"/>
+        <property name="cleanupPolicies" ref="cache-1-cleanupPolicies" />
+        <property name="notifierPolicy" ref=""/>
+    </bean>
+
+
+
+</beans>
